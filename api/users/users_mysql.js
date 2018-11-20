@@ -69,10 +69,10 @@ const userMysql = {
                     return db.query(sql);
                 })
                 .then(results => {
-                    if (results.length > 0) return reject({
-                        status: 409,
-                        message: `Email ${obj.email} in use`
-                    });
+                    if (results.length > 0) {
+                        return reject({ status: 409, message: `Email ${obj.email} in use` });
+                    };
+                    delete obj.password;
                     sql = Mysql.format("INSERT INTO users SET ?", obj);
                     return db.query(sql);
                 })
@@ -81,7 +81,10 @@ const userMysql = {
                     obj.userId = result.insertId;
                     resolve(obj);
                 })
-                .catch(err => { db.close(); reject(err); });
+                .catch(err => { 
+                    db.close(); 
+                    reject(err); 
+                });
         });
     },
     putUser: (obj) => {

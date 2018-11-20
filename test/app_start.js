@@ -6,12 +6,10 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let should = chai.should();
 let server = require('../server_test');
-let mongoose = require('mongoose');
 
 chai.use(chaiHttp);
 after(() => {
     server.close();
-    mongoose.connection.close();
 })
 describe("GET VERSION", () => {
     it('it should get the version', (done) => {
