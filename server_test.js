@@ -3,11 +3,8 @@ const Dotenv = require('dotenv');
 const App = require('./app');
 const Winston = require('./winston');
 const Pack = require('./package.json');
-const Mongoose = require('mongoose');
 
 Dotenv.config();
-Mongoose.connect(process.env.BASE_MONGOOSE_TEST_CONNECTION, { useNewUrlParser: true });
-Mongoose.set('useCreateIndex', true)
 
 var apiPort = process.env.BASE_PORT || 8088;
 
