@@ -1,6 +1,6 @@
 const Mysql = require('mysql');
 const MysqlConnector = require('../../connectors/mysql_connector');
-const Bcrypt = require('bcrypt');
+const Password = require("../../utilities/password");
 const Jwt = require('jsonwebtoken');
 const Dotenv = require('dotenv');
 Dotenv.config();
@@ -42,9 +42,7 @@ const userMysql = {
                     db.close();
                     if (rows.length == 0) return reject({ status: 401, message: `Auth failed` });
                     user = rows[0];
-                    return Bcrypt.compare(obj.password, user.password);
-                })
-                .then((result) => {
+                    var result = Password.validate(user.password, obj.password);
                     if (!result) return reject({ status: 401, message: `Auth failed` });
                     let token = Jwt.sign({
                         email: user.email,
@@ -64,16 +62,14 @@ const userMysql = {
         return new Promise((resolve, reject) => {
             let db = new MysqlConnector.dbMysql();
             let sql = "";
-            Bcrypt.hash(obj.password, 10)
-                .then(hash => {
-                    obj.password = hash;
-                    sql = Mysql.format("SELECT * FROM users WHERE email = ?", obj.email);
-                    return db.query(sql);
-                })
+            sql = Mysql.format("SELECT * FROM users WHERE email = ?", obj.email);
+            db.query(sql)
                 .then(results => {
                     if (results.length > 0) {
                         return reject({ status: 409, message: `Email ${obj.email} in use` });
                     };
+                    let hash = Password.hash(obj.password);
+                    obj.password = hash;
                     sql = Mysql.format("INSERT INTO users SET ?", obj);
                     return db.query(sql);
                 })
@@ -82,9 +78,9 @@ const userMysql = {
                     obj.userId = result.insertId;
                     resolve(obj);
                 })
-                .catch(err => { 
-                    db.close(); 
-                    reject(err); 
+                .catch(err => {
+                    db.close();
+                    reject(err);
                 });
         });
     },
@@ -93,22 +89,11 @@ const userMysql = {
         return new Promise((resolve, reject) => {
             let db = new MysqlConnector.dbMysql();
             let sql = "";
-            Bcrypt.hash(obj.password, 10, (err, hash) => {
-                if (err) return reject(err);
-                obj.password = hash;
-                sql = Mysql.format("UPDATE users SET ? WHERE userId = ?", [obj, id]);
-                db.query(sql)
-                    .then(() => { db.close(); resolve(obj); })
-                    .catch(err => { db.close(); reject(err); });
-            });
-        });
-    },
-    deleteUser: (id) => {
-        return new Promise((resolve, reject) => {
-            let db = new MysqlConnector.dbMysql();
-            let sql = Mysql.format("DELETE FROM users WHERE userId = ?", id);
+            let hash = Password.hash(obj.password);
+            obj.password = hash;
+            sql = Mysql.format("UPDATE users SET ? WHERE userId = ?", [obj, id]);
             db.query(sql)
-                .then(() => { db.close(); resolve(); })
+                .then(() => { db.close(); resolve(obj); })
                 .catch(err => { db.close(); reject(err); });
         });
     }

@@ -3,7 +3,7 @@ const Express = require('express');
 var router = Express.Router();
 const UsersMySql = require('./users_mysql');
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
     UsersMySql.getUsers()
         .then(result => res.json(result))
         .catch(err => next(err));

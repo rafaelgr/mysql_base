@@ -6,15 +6,14 @@ module.exports.dbMysql = class Database {
     constructor(config) {
         this.config = config;
         if (!this.config) {
-            if (process.env.NODE_ENV != "TEST") {
-                this.config = {
-                    host: process.env.BASE_MYSQL_HOST,
-                    user: process.env.BASE_MYSQL_USER,
-                    password: process.env.BASE_MYSQL_PASSWORD,
-                    database: process.env.BASE_MYSQL_DATABASE,
-                    port: process.env.BASE_MYSQL_PORT
-                };
-            } else {
+            this.config = {
+                host: process.env.BASE_MYSQL_HOST,
+                user: process.env.BASE_MYSQL_USER,
+                password: process.env.BASE_MYSQL_PASSWORD,
+                database: process.env.BASE_MYSQL_DATABASE,
+                port: process.env.BASE_MYSQL_PORT
+            };
+            if (process.env.NODE_ENV == "TEST") {
                 this.config = {
                     host: process.env.BASE_MYSQL_HOST_TEST,
                     user: process.env.BASE_MYSQL_USER_TEST,
