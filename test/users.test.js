@@ -59,7 +59,7 @@ describe("USERS", () => {
             chai.request(server)
                 .get('/users/' + createdUser.userId)
                 .end((err, res) => {
-                    res.should.have.status(401);
+                    res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.to.deep.equal(createdUser)
                     done();

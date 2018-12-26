@@ -96,6 +96,16 @@ const userMysql = {
                 .then(() => { db.close(); resolve(obj); })
                 .catch(err => { db.close(); reject(err); });
         });
+    },
+    deleteUser: (id) => {
+        return new Promise((resolve, reject) => {
+            let db = new MysqlConnector.dbMysql();
+            let sql = "";
+            sql = Mysql.format("DELETE FROM users WHERE userId = ?", id);
+            db.query(sql)
+                .then(() => { db.close(); resolve({ res: 'OK' }); })
+                .catch(err => { db.close(); reject(err); });
+        });
     }
 };
 module.exports = userMysql;
