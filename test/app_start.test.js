@@ -7,6 +7,8 @@ let chaiHttp = require('chai-http');
 let should = chai.should();
 let server = require('../server_test');
 
+chai.config.includeStack = false;
+
 chai.use(chaiHttp);
 after(() => {
     server.close();

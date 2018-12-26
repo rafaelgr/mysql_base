@@ -24,7 +24,9 @@ const userMysql = {
                 .then(rows => {
                     db.close();
                     if (rows.length == 0) return reject({ status: 404, message: `No user found for id ${id}` });
-                    resolve(rows[0]);
+                    let user = rows[0];
+                    delete user.password;
+                    resolve(user);
                 })
                 .catch(err => { db.close(); reject(err); });
         });
@@ -72,7 +74,6 @@ const userMysql = {
                     if (results.length > 0) {
                         return reject({ status: 409, message: `Email ${obj.email} in use` });
                     };
-                    delete obj.password;
                     sql = Mysql.format("INSERT INTO users SET ?", obj);
                     return db.query(sql);
                 })
